@@ -471,6 +471,15 @@ void WbSupervisorUtilities::updateDeletedNodeList(WbNode *node) {
   mNodesDeletedSinceLastStep.push_back(nodeInfo);
 }
 
+bool WbSupervisorUtilities::isSelfVisible(WbNode *node) const {
+  if (node->parentNode() != WbWorld::instance()->root())
+    return true;
+  WbNode *n = node;
+  while (n->protoParameterNode())
+    n = n->protoParameterNode();
+  return WbNodeUtilities::isVisible(node->parentField());
+}
+
 void WbSupervisorUtilities::handleMessage(QDataStream &stream) {
   unsigned char byte;
   stream >> byte;
@@ -1641,8 +1650,7 @@ void WbSupervisorUtilities::writeConfigure(QDataStream &stream) {
   stream << (unsigned char)C_CONFIGURE;
   stream << (int)selfNode->uniqueId();
   stream << (unsigned char)selfNode->isProtoInstance();
-  stream << (unsigned char)(selfNode->parentNode() != WbWorld::instance()->root() &&
-                            WbNodeUtilities::isVisible(selfNode->parentField()));
+  stream << (unsigned char)isSelfVisible(selfNode);
   const QByteArray &s = selfNode->modelName().toUtf8();
   stream.writeRawData(s.constData(), s.size() + 1);
   const QByteArray &ba = selfNode->defName().toUtf8();

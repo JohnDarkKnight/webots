@@ -118,6 +118,7 @@ private:
   void makeFilenameAbsolute(QString &filename);
   WbSimulationState::Mode convertSimulationMode(int supervisorMode);
   QString createLabelUpdateString(const WbWrenLabelOverlay *labelOverlay) const;
+  bool isSelfVisible(WbNode *node) const;
 
   QList<int> mLabelIds;
 };
